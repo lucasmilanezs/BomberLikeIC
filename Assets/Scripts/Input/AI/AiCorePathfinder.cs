@@ -201,10 +201,7 @@ namespace IC.Input.AI
 
                 bool destinationChanged = _activePath == null ||
                                           _activePath.Count == 0 ||
-                                          newPath[newPath.Count - 1] != _activePath[_activePath.Count - 1] ||
-                                          (_activePathIndex < newPath.Count &&
-                                           _activePathIndex < _activePath.Count &&
-                                           newPath[_activePathIndex] != _activePath[_activePathIndex]);
+                                          newPath[newPath.Count - 1] != _activePath[_activePath.Count - 1];
 
                 _activePath = new List<Vector3Int>(newPath);
 
