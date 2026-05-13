@@ -124,6 +124,8 @@ namespace IC.Calibration
 
         private IEnumerator CollectZeroRoutine()
         {
+            _sensor?.CalibrarSensores();
+
             StatusMessage = "Aguarde — medindo plataforma vazia...";
             _samplesX.Clear();
             _samplesY.Clear();
@@ -311,6 +313,46 @@ namespace IC.Calibration
             foreach (var s in samples)
                 variance += (s - mean) * (s - mean);
             return Mathf.Sqrt(variance / samples.Count);
+        }
+
+        private void OnGUI()
+        {
+            var style = new GUIStyle(GUI.skin.label) { fontSize = 14 };
+            float y = 10;
+            style.normal.textColor = Color.red;
+
+            GUI.Label(new Rect(10, y, 400, 20), $"Step: {CurrentStep}", style); y += 25;
+
+            if (_sensor != null)
+            {
+                GUI.Label(new Rect(10, y, 400, 20), $"XRaw: {_sensor.XRaw} | YRaw: {_sensor.YRaw}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"SmoothX: {_processor.SmoothX:F2} | SmoothY: {_processor.SmoothY:F2}", style); y += 25;
+            }
+
+            y += 10;
+            GUI.Label(new Rect(10, y, 400, 20), $"── Coleta atual ──", style); y += 25;
+            GUI.Label(new Rect(10, y, 400, 20), $"Amostras: {_samplesX.Count}/{collectionSamples}", style); y += 25;
+
+            if (_samplesX.Count > 0)
+            {
+                GUI.Label(new Rect(10, y, 400, 20), $"Média X: {Average(_samplesX):F2} | Média Y: {Average(_samplesY):F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"StdDev X: {StdDev(_samplesX):F2} | StdDev Y: {StdDev(_samplesY):F2}", style); y += 25;
+            }
+
+            y += 10;
+            GUI.Label(new Rect(10, y, 400, 20), $"── Perfil atual ──", style); y += 25;
+
+            if (_profile != null)
+            {
+                GUI.Label(new Rect(10, y, 400, 20), $"Zero X: {_profile.zeroX:F2} | Zero Y: {_profile.zeroY:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"Baseline X: {_profile.baselineX:F2} | Baseline Y: {_profile.baselineY:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"StdDev X: {_profile.baselineStdDevX:F2} | StdDev Y: {_profile.baselineStdDevY:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"Threshold R: {_profile.thresholdRight:F2} | L: {_profile.thresholdLeft:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"Threshold U: {_profile.thresholdUp:F2} | D: {_profile.thresholdDown:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"MaxRange X: {_profile.maxRangeX:F2} | MaxRange Y: {_profile.maxRangeY:F2}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"Window: {_profile.movingAverageWindow}", style); y += 25;
+                GUI.Label(new Rect(10, y, 400, 20), $"Picos — R: {_peakRight:F2} L: {_peakLeft:F2} U: {_peakUp:F2} D: {_peakDown:F2}", style);
+            }
         }
     }
 }
